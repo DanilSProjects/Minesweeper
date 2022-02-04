@@ -91,6 +91,35 @@ function addNeighbour(neighboursArray, xPos, yPos) {
     }
 }
 
+// If user clicked on a "0" tile, all the neighbouring non-bombs will open
+function selectedZero(xPos, yPos) {
+    let neighbours = [];
+    addNeighbour(neighbours, xPos, yPos);
+    neighbours.forEach( (tile) => {
+
+        tileArray.forEach( (object) => {
+            if (object["x-position"] === tile["x-position"] && object["y-position"] === tile["y-position"]) {
+                tile.isBomb = object.isBomb;
+                tile.bombsAround = object.bombsAround;
+            }
+        } )
+
+
+        let tileId = 9 * (tile["y-position"] - 1) + tile["x-position"];
+        let gameTile = document.querySelector(`#tile_${tileId}`);
+        if (gameTile.classList.contains("revealed-empty") === false && tile.isBomb === false && tile.bombsAround === 0) {
+            gameTile.classList.add("revealed-empty");
+            selectedZero(tile["x-position"], tile["y-position"])
+        } else if (tile.isBomb === false && tile.bombsAround > 0 && gameTile.innerHTML === "") {
+            let bombNumber = document.createElement("p");
+            bombNumber.textContent = tile.bombsAround;
+            bombNumber.classList.add("bomb-number");
+            gameTile.classList.add("revealed-empty")
+            gameTile.appendChild(bombNumber);
+        }
+    } )
+}
+
 // Associate tile objects with each game tile
 function associateTileWithObject() {
     let gameTilesList = document.querySelectorAll(".game-tile");
@@ -102,23 +131,29 @@ function associateTileWithObject() {
 }
 
 function userTileClick(e) {
-    let tileId = e.target.getAttribute("id");
-    let chosenTileObject = tileArray.filter( (tile) => {
-        if (tile["id"] === tileId) {
-            return true;
+    if (e.target.classList.contains("revealed-empty") === false) {
+        let tileId = e.target.getAttribute("id");
+        let chosenTileObject = tileArray.filter( (tile) => {
+            if (tile["id"] === tileId) {
+                return true;
+            }
+        } )[0];
+        
+        if (chosenTileObject.isBomb === false && chosenTileObject.bombsAround === 0) {
+            selectedZero(chosenTileObject["x-position"], chosenTileObject["y-position"])
         }
-    } )[0];
     
-    if (chosenTileObject.isBomb === false && chosenTileObject.bombsAround > 0 &&  e.target.innerHTML === "") {
-        let bombNumber = document.createElement("p");
-        bombNumber.textContent = chosenTileObject.bombsAround;
-        bombNumber.classList.add("bomb-number");
-        e.target.appendChild(bombNumber);
-    }
-    if (chosenTileObject && chosenTileObject.isBomb === true) {
-        e.target.classList.add("revealed-bomb");
-    } else {
-        e.target.classList.add("revealed-empty");
+        if (chosenTileObject.isBomb === false && chosenTileObject.bombsAround > 0 &&  e.target.innerHTML === "") {
+            let bombNumber = document.createElement("p");
+            bombNumber.textContent = chosenTileObject.bombsAround;
+            bombNumber.classList.add("bomb-number");
+            e.target.appendChild(bombNumber);
+        }
+        if (chosenTileObject && chosenTileObject.isBomb === true) {
+            e.target.classList.add("revealed-bomb");
+        } else {
+            e.target.classList.add("revealed-empty");
+        }
     }
 }
 
