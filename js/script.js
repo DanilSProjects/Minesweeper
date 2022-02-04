@@ -1,6 +1,8 @@
 let gameContainer = document.querySelector("#game-container");
 let tileArray = new Array();
+let bombArray = new Array();
 
+// Add game tiles to game-container and create initial tile objects
 function createGameTiles() {
     for (let i = 1; i <= 81; i++) {
         let tile = document.createElement("div");
@@ -27,21 +29,52 @@ function createGameTiles() {
     }
 }
 
+// Generate bomb coordinates and associate them with respective tiles
+function generateBombCoordinates() {
+    for (let i = 1; i <= 10; i++) {
+        let bombX = Math.ceil(Math.random() * 9);
+        let bombY = Math.ceil(Math.random() * 9);
+        let bombCoordinates = {
+            "x-position": bombX,
+            "y-position": bombY,
+        };
+        bombArray.push(bombCoordinates);
+    }
+}
+
+function labelBombTiles() {
+    bombArray.forEach( (bomb) => {
+        bombId = 9 * (bomb["y-position"] - 1) + bomb["x-position"];
+        tileArray.forEach((tile) => {
+            if (tile["id"] === `tile_${bombId}`) {
+                tile["isBomb"] = true;
+            }
+        })
+    })
+
+}
+
+// Associate tile objects with each game tile
 function associateTileWithObject() {
     let gameTilesList = document.querySelectorAll(".game-tile");
 
     gameTilesList.forEach( (gameTile) => {
-        gameTile.addEventListener("click", (e) => {
-            let tileId = e.target.getAttribute("id");
-            console.log(tileArray.filter( (tile) => {
-                if (tile["id"] === tileId) {
-                    return true;
-                }
-            } ))
-        })
+        gameTile.addEventListener("click", userTileClick)
 
     } )
 }
 
+function userTileClick(e) {
+    let tileId = e.target.getAttribute("id");
+    console.log(tileArray.filter( (tile) => {
+        if (tile["id"] === tileId) {
+            return true;
+        }
+    } ))
+}
+
 createGameTiles();
 associateTileWithObject();
+generateBombCoordinates();
+labelBombTiles();
+console.log(bombArray)
