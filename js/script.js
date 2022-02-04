@@ -14,7 +14,7 @@ function createGameTiles() {
             "x-position": 1,
             "y-position": 1,
             "isBomb":false,
-            "bombsAround": [],
+            "bombsAround": 0,
         }
         tileObject["x-position"] = (i % 9 === 0) ? 9 : i % 9;
         let existingTiles = ["placeholder"];
@@ -62,83 +62,30 @@ function determineBombsAround() {
         let bombsAround = 0;
         let tileX = tile["x-position"];
         let tileY = tile["y-position"];
-
-        // Diagonal neighbours (I know it looks awful...)
-        if (tileX === 1 && tileY === 1) {
-            addNeighbour(neighbours, (tileX + 1), (tileY + 1));
-        } else if (tileX === 1 && tileY === containerSide) {
-            addNeighbour(neighbours, (tileX + 1), (tileY - 1));
-        } else if (tileX === containerSide && tileY === 1) {
-            addNeighbour(neighbours, (tileX - 1), (tileY + 1));
-        } else if (tileX === containerSide && tileY === containerSide) {
-            addNeighbour(neighbours, (tileX - 1), (tileY - 1));
-        } else {
-
-            if (tileX === 1) {
-                addNeighbour(neighbours, (tileX + 1), (tileY + 1));
-                addNeighbour(neighbours, (tileX + 1), (tileY - 1));
-            } else if (tileX === containerSide) {
-                addNeighbour(neighbours, (tileX - 1), (tileY + 1));
-                addNeighbour(neighbours, (tileX - 1), (tileY - 1));
-            } else {
-                if (tileY === 1){
-                    addNeighbour(neighbours, (tileX + 1), (tileY + 1));
-                    addNeighbour(neighbours, (tileX - 1), (tileY + 1));
-                } else if (tileY === containerSide) {
-                    addNeighbour(neighbours, (tileX + 1), (tileY - 1));
-                    addNeighbour(neighbours, (tileX - 1), (tileY - 1));
-                } else {
-                    addNeighbour(neighbours, (tileX + 1), (tileY + 1));
-                    addNeighbour(neighbours, (tileX + 1), (tileY - 1));
-                    addNeighbour(neighbours, (tileX - 1), (tileY + 1));
-                    addNeighbour(neighbours, (tileX - 1), (tileY - 1));
-                }
-            }
-        }
-
-        // Vertical neighbours
-        switch (tileY) {
-            case 1:
-                addNeighbour(neighbours, tileX, (tileY + 1));
-                break;
-            case containerSide:
-                addNeighbour(neighbours, tileX, (tileY - 1));
-                break;
-            default:
-                addNeighbour(neighbours, tileX, (tileY + 1));
-                addNeighbour(neighbours, tileX, (tileY - 1));
-        }
-
-        // Horizontal neighbours
-        switch (tileX) {
-            case 1:
-                addNeighbour(neighbours, (tileX + 1), tileY);
-                break;
-            case containerSide:
-                addNeighbour(neighbours, (tileX - 1), tileY);
-                break;
-            default:
-                addNeighbour(neighbours, (tileX + 1), tileY);
-                addNeighbour(neighbours, (tileX - 1), tileY);
-        }
-
+        addNeighbour(neighbours, tileX, tileY);
         neighbours.forEach( (neighbour) => {
-            tile.bombsAround.push(neighbour)
             bombArray.forEach( (bomb) => {
                 if (neighbour["x-position"] === bomb["x-position"] && neighbour["y-position"] === bomb["y-position"]) {
                     bombsAround += 1;
                 }
             })
         })
-    tile.bombsAround = bombsAround;
+    tile["bombsAround"] = bombsAround;
     } )
 }
 
 function addNeighbour(neighboursArray, xPos, yPos) {
-    neighboursArray.push({
-        "x-position": xPos,
-        "y-position": yPos,
-    })
+    for (let i = xPos - 1; i <= xPos + 1; i++) {
+        for (let j = yPos - 1; j<= yPos +1; j++) {
+            let neighbourCoordinates = {
+                "x-position": i,
+                "y-position": j,
+            }
+            if ((i === xPos && j === yPos) === false && i >= 1 && j >= 1 && i <= containerSide && j <= containerSide && neighboursArray.includes(neighbourCoordinates) === false) {
+                neighboursArray.push(neighbourCoordinates)
+            }
+        }
+    }
 }
 
 // Associate tile objects with each game tile
@@ -159,8 +106,11 @@ function userTileClick(e) {
         }
     } )[0];
     console.log(chosenTileObject)
+    let bombNumber = document.createElement("p");
+    bombNumber.textContent = chosenTileObject.bombsAround;
+    e.target.appendChild(bombNumber);
     if (chosenTileObject.isBomb === true) {
-        e.target.classList.add("revealed-bomb")
+        e.target.classList.add("revealed-bomb");
     }
 }
 
