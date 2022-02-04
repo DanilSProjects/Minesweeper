@@ -32,14 +32,17 @@ function createGameTiles() {
 
 // Generate bomb coordinates and associate them with respective tiles
 function generateBombCoordinates() {
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 10;) {
         let bombX = Math.ceil(Math.random() * 9);
         let bombY = Math.ceil(Math.random() * 9);
         let bombCoordinates = {
             "x-position": bombX,
             "y-position": bombY,
         };
-        bombArray.push(bombCoordinates);
+        if (bombArray.includes(bombCoordinates) === false) {
+            bombArray.push(bombCoordinates);
+            i++;
+        }
     }
 }
 
@@ -105,12 +108,17 @@ function userTileClick(e) {
             return true;
         }
     } )[0];
-    console.log(chosenTileObject)
-    let bombNumber = document.createElement("p");
-    bombNumber.textContent = chosenTileObject.bombsAround;
-    e.target.appendChild(bombNumber);
-    if (chosenTileObject.isBomb === true) {
+    
+    if (chosenTileObject.isBomb === false && chosenTileObject.bombsAround > 0 &&  e.target.innerHTML === "") {
+        let bombNumber = document.createElement("p");
+        bombNumber.textContent = chosenTileObject.bombsAround;
+        bombNumber.classList.add("bomb-number");
+        e.target.appendChild(bombNumber);
+    }
+    if (chosenTileObject && chosenTileObject.isBomb === true) {
         e.target.classList.add("revealed-bomb");
+    } else {
+        e.target.classList.add("revealed-empty");
     }
 }
 
@@ -119,4 +127,3 @@ associateTileWithObject();
 generateBombCoordinates();
 labelBombTiles();
 determineBombsAround();
-console.log(bombArray)
