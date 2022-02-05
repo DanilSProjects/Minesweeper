@@ -125,13 +125,14 @@ function associateTileWithObject() {
     let gameTilesList = document.querySelectorAll(".game-tile");
 
     gameTilesList.forEach( (gameTile) => {
-        gameTile.addEventListener("click", userTileClick)
-
+        gameTile.addEventListener("click", userTileClick);
+        gameTile.addEventListener("contextmenu", tileFlagged)
     } )
 }
 
+// Left click function
 function userTileClick(e) {
-    if (e.target.classList.contains("revealed-empty") === false) {
+    if (e.target.classList.contains("revealed-empty") === false && e.target.classList.contains("flagged-tile") === false) {
         let tileId = e.target.getAttribute("id");
         let chosenTileObject = tileArray.filter( (tile) => {
             if (tile["id"] === tileId) {
@@ -154,6 +155,24 @@ function userTileClick(e) {
         } else {
             e.target.classList.add("revealed-empty");
         }
+    }
+}
+
+// Right click function (flag the tile)
+function tileFlagged(e) {
+    let selectedTile = e.target;
+    if (e.target.parentNode.classList.contains("game-tile")) {
+        selectedTile = e.target.parentNode;
+    }
+    if (selectedTile.classList.contains("revealed-empty") === false && selectedTile.classList.contains("flagged-tile") === false) {
+        let flagImage = document.createElement("img");
+        flagImage.setAttribute("src", "./images/flag.png")
+        flagImage.classList.add("flag")
+        selectedTile.classList.add("flagged-tile")
+        selectedTile.appendChild(flagImage)
+    } else if (selectedTile.classList.contains("flagged-tile")) {
+        selectedTile.removeChild(selectedTile.children[0])
+        selectedTile.classList.remove("flagged-tile");
     }
 }
 
