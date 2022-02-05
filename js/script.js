@@ -162,6 +162,7 @@ function userTileClick(e) {
         }
         if (chosenTileObject && chosenTileObject.isBomb === true) {
             e.target.classList.add("revealed-bomb");
+            lose();
         } else {
             e.target.classList.add("revealed-empty");
         }
@@ -187,14 +188,12 @@ function tileFlagged(e) {
         selectedTile.classList.add("flagged-tile");
         selectedTile.appendChild(flagImage);
         revealedTilesList.push(selectedTile);
-        console.log(revealedTilesList)
     } else if (selectedTile.classList.contains("flagged-tile")) {
         addingFlag = false;
         selectedTile.removeChild(selectedTile.children[0]);
         selectedTile.classList.remove("flagged-tile");
         let indexOfTile = revealedTilesList.indexOf(selectedTile);
-        revealedTilesList.splice(indexOfTile, 1)
-        console.log(revealedTilesList)
+        revealedTilesList.splice(indexOfTile, 1);
     }
 
     // Check if user flagged a bomb
@@ -214,6 +213,8 @@ function tileFlagged(e) {
     checkForWin();
 }
 
+// Victory/defeat functions to end game
+
 function checkForWin() {
     if (revealedTilesList.length === (containerSide * containerSide - bombNo) || bombsFlagged === bombNo) {
         win();
@@ -221,7 +222,11 @@ function checkForWin() {
 }
 
 function win() {
-    alert("You Won!")
+    alert("You Won! :)")
+}
+
+function lose() {
+    alert("You Lost! :(")
 }
 
 createGameTiles();
