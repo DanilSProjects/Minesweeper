@@ -2,6 +2,10 @@ let gameContainer = document.querySelector("#game-container");
 let tileArray = new Array();
 let bombArray = new Array();
 let containerSide = 9;
+let bombNo = 10;
+let bombsFlagged = 0;
+let gameTilesList = [];
+let revealedTilesList = [];
 
 // Add game tiles to game-container and create initial tile objects
 function createGameTiles() {
@@ -28,18 +32,23 @@ function createGameTiles() {
         tileArray.push(tileObject);
         gameContainer.appendChild(tile);
     }
+    gameTilesList = document.querySelectorAll(".game-tile")
 }
 
 // Generate bomb coordinates and associate them with respective tiles
 function generateBombCoordinates() {
-    for (let i = 1; i <= 10;) {
+    for (let i = 1; i <= bombNo;) {
         let bombX = Math.ceil(Math.random() * 9);
         let bombY = Math.ceil(Math.random() * 9);
+        let bombId = 9 * (bombY - 1) + bombX;
         let bombCoordinates = {
             "x-position": bombX,
             "y-position": bombY,
+            "bomb-id": `tile_${bombId}`,
         };
-        if (bombArray.includes(bombCoordinates) === false) {
+
+        let allBombIds = bombArray.map( bomb => bomb["bomb-id"])
+        if (allBombIds.includes(bombCoordinates["bomb-id"]) === false) {
             bombArray.push(bombCoordinates);
             i++;
         }
@@ -48,7 +57,7 @@ function generateBombCoordinates() {
 
 function labelBombTiles() {
     bombArray.forEach( (bomb) => {
-        bombId = 9 * (bomb["y-position"] - 1) + bomb["x-position"];
+        let bombId = 9 * (bomb["y-position"] - 1) + bomb["x-position"];
         tileArray.forEach((tile) => {
             if (tile["id"] === `tile_${bombId}`) {
                 tile["isBomb"] = true;
@@ -109,6 +118,7 @@ function selectedZero(xPos, yPos) {
         let gameTile = document.querySelector(`#tile_${tileId}`);
         if (gameTile.classList.contains("revealed-empty") === false && tile.isBomb === false && tile.bombsAround === 0) {
             gameTile.classList.add("revealed-empty");
+            revealedTilesList.push(gameTile);
             selectedZero(tile["x-position"], tile["y-position"])
         } else if (tile.isBomb === false && tile.bombsAround > 0 && gameTile.innerHTML === "") {
             let bombNumber = document.createElement("p");
@@ -116,14 +126,13 @@ function selectedZero(xPos, yPos) {
             bombNumber.classList.add("bomb-number");
             gameTile.classList.add("revealed-empty")
             gameTile.appendChild(bombNumber);
+            revealedTilesList.push(gameTile);
         }
     } )
 }
 
 // Associate tile objects with each game tile
 function associateTileWithObject() {
-    let gameTilesList = document.querySelectorAll(".game-tile");
-
     gameTilesList.forEach( (gameTile) => {
         gameTile.addEventListener("click", userTileClick);
         gameTile.addEventListener("contextmenu", tileFlagged)
@@ -132,7 +141,7 @@ function associateTileWithObject() {
 
 // Left click function
 function userTileClick(e) {
-    if (e.target.classList.contains("revealed-empty") === false && e.target.classList.contains("flagged-tile") === false) {
+    if (e.target.parentNode.getAttribute('id') === "game-container" && e.target.classList.contains("revealed-empty") === false && e.target.classList.contains("flagged-tile") === false) {
         let tileId = e.target.getAttribute("id");
         let chosenTileObject = tileArray.filter( (tile) => {
             if (tile["id"] === tileId) {
@@ -145,6 +154,7 @@ function userTileClick(e) {
         }
     
         if (chosenTileObject.isBomb === false && chosenTileObject.bombsAround > 0 &&  e.target.innerHTML === "") {
+            revealedTilesList.push(e.target);
             let bombNumber = document.createElement("p");
             bombNumber.textContent = chosenTileObject.bombsAround;
             bombNumber.classList.add("bomb-number");
@@ -155,26 +165,63 @@ function userTileClick(e) {
         } else {
             e.target.classList.add("revealed-empty");
         }
+        checkForWin();
     }
 }
 
 // Right click function (flag the tile)
 function tileFlagged(e) {
     let selectedTile = e.target;
+    let addingFlag = true;
+
     if (e.target.parentNode.classList.contains("game-tile")) {
         selectedTile = e.target.parentNode;
     }
+
+    // Add/remove flag if needed
     if (selectedTile.classList.contains("revealed-empty") === false && selectedTile.classList.contains("flagged-tile") === false) {
+        addingFlag = true;
         let flagImage = document.createElement("img");
-        flagImage.setAttribute("src", "./images/flag.png")
-        flagImage.classList.add("flag")
-        selectedTile.classList.add("flagged-tile")
-        selectedTile.appendChild(flagImage)
+        flagImage.setAttribute("src", "./images/flag.png");
+        flagImage.classList.add("flag");
+        selectedTile.classList.add("flagged-tile");
+        selectedTile.appendChild(flagImage);
+        revealedTilesList.push(selectedTile);
+        console.log(revealedTilesList)
     } else if (selectedTile.classList.contains("flagged-tile")) {
-        selectedTile.removeChild(selectedTile.children[0])
+        addingFlag = false;
+        selectedTile.removeChild(selectedTile.children[0]);
         selectedTile.classList.remove("flagged-tile");
+        let indexOfTile = revealedTilesList.indexOf(selectedTile);
+        revealedTilesList.splice(indexOfTile, 1)
+        console.log(revealedTilesList)
     }
-    console.log(selectedTile)
+
+    // Check if user flagged a bomb
+    let selectedTileId = selectedTile.getAttribute('id');
+    bombArray.forEach((bomb) => {
+        if (selectedTileId === bomb["bomb-id"]) {
+            switch (addingFlag) {
+                case true:
+                    bombsFlagged += 1;
+                    break;
+                case false:
+                    bombsFlagged -= 1;
+                    break;
+            }
+        }
+    })
+    checkForWin();
+}
+
+function checkForWin() {
+    if (revealedTilesList.length === (containerSide * containerSide - bombNo) || bombsFlagged === bombNo) {
+        win();
+    }
+}
+
+function win() {
+    alert("You Won!")
 }
 
 createGameTiles();
