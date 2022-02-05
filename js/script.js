@@ -174,6 +174,7 @@ function tileFlagged(e) {
         selectedTile.removeChild(selectedTile.children[0])
         selectedTile.classList.remove("flagged-tile");
     }
+    console.log(selectedTile)
 }
 
 createGameTiles();

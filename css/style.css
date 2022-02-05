@@ -1,7 +1,12 @@
 #game-container {
     display: grid;
-    grid-template-columns: repeat(9, 5%);
+    width: 500px;
+    grid-template-columns: repeat(9, 11.1%);
     column-gap: 0;
+    border: 5px solid rgb(116, 116, 116);
+    border-radius: 5px;
+    padding: 35px;
+    background-color: rgb(150, 150, 150);
     gap: 0;
 }
 
