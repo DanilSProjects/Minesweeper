@@ -3,6 +3,11 @@
     src: url("../fonts/Minehead\ DEMO.otf");
 }
 
+@font-face {
+    font-family: Dogica;
+    src: url("../fonts/dogicabold.otf");
+}
+
 header {
     display: flex;
     gap: 25px;
@@ -153,4 +158,42 @@ body {
 .game-over-header img{
     width: 90px;
 
+}
+
+/* Number colours */
+
+.bomb-number {
+    font-family: Dogica;
+}
+
+.number-1 {
+    color: rgb(59, 160, 255);
+}
+
+.number-2 {
+    color: rgb(27, 205, 27);
+}
+
+.number-3 {
+    color: rgb(243, 29, 29);
+}
+
+.number-4 {
+    color: rgb(44, 58, 255);
+}
+
+.number-5 {
+    color: rgb(177, 56, 0);
+}
+
+.number-6 {
+    color: rgb(33, 224, 199);
+}
+
+.number-7 {
+    color: rgb(0, 0, 0);
+}
+
+.number-8 {
+    color: rgb(208, 208, 208);
 }

@@ -177,6 +177,7 @@ function selectedZero(xPos, yPos) {
             let bombNumber = document.createElement("p");
             bombNumber.textContent = tile.bombsAround;
             bombNumber.classList.add("bomb-number");
+            bombNumber.classList.add("number-" + tile.bombsAround);
             gameTile.classList.add("revealed-empty")
             gameTile.appendChild(bombNumber);
             revealedTilesList.push(gameTile);
@@ -211,6 +212,7 @@ function userTileClick(e) {
             let bombNumber = document.createElement("p");
             bombNumber.textContent = chosenTileObject.bombsAround;
             bombNumber.classList.add("bomb-number");
+            bombNumber.classList.add("number-" + chosenTileObject.bombsAround);
             e.target.appendChild(bombNumber);
         }
         if (chosenTileObject && chosenTileObject.isBomb === true) {
