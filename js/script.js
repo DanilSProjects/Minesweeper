@@ -6,6 +6,7 @@ let bombNo = 10;
 let bombsFlagged = 0;
 let gameTilesList = [];
 let revealedTilesList = [];
+let currentDifficulty = "easy";
 
 // Adjust difficulty
 let difficultyRadioButtons = document.querySelectorAll("input[name='difficulty']");
@@ -15,20 +16,20 @@ difficultyRadioButtons.forEach( (button) => {
             case "easy":
                 containerSide = 9;
                 bombNo = 10;
+                currentDifficulty = "easy";
                 restart();
-                gameContainer.classList.add("easy");
                 break;
             case "medium":
                 containerSide = 16;
                 bombNo = 40;
+                currentDifficulty = "medium";
                 restart();
-                gameContainer.classList.add("medium");
                 break;
             case "hard":
                 containerSide = 24;
                 bombNo = 100;
+                currentDifficulty = "hard";
                 restart();
-                gameContainer.classList.add("hard");
                 break;
         }
     })
@@ -36,12 +37,22 @@ difficultyRadioButtons.forEach( (button) => {
 
 function restart() {
     gameContainer.textContent = "";
-    gameContainer.classList = "";
+    gameContainer.classList = currentDifficulty;
     bombArray = [];
     tileArray = [];
     bombsFlagged = 0;
     gameTilesList = [];
     revealedTilesList = [];
+
+    try {
+        let modal = document.querySelector(".modal");
+        let mainBody = document.querySelector("body");
+        mainBody.removeChild(modal);
+    }
+    catch {
+        // No modal yet
+    }
+
     createGameTiles();
     associateTileWithObject();
     generateBombCoordinates();
@@ -264,14 +275,41 @@ function checkForWin() {
 }
 
 function win() {
-    console.log(bombNo)
-    console.log(bombsFlagged)
-    console.log(revealedTilesList.length)
-    alert("You Won! :)")
+    gameOver("Victory!")
 }
 
 function lose() {
-    alert("You Lost! :(")
+   gameOver("Defeat!")
+}
+
+function gameOver(text) {
+    let mainBody = document.querySelector("body");
+
+    let modalDiv = document.createElement("div");
+    let modalContentDiv = document.createElement("div");
+    modalDiv.classList.add("modal");
+    modalContentDiv.classList.add("modal-content");
+
+    let headerDiv = document.createElement("div");
+    headerDiv.classList.add("game-over-header");
+    let smiley = document.createElement("img");
+    if (text === "Victory!") {
+        smiley.setAttribute("src", "./images/smiley-win.png")
+    } else if (text = "Defeat!"){
+        smiley.setAttribute("src", "./images/smiley-lose.png")
+    }
+    let gameOverMessage = document.createElement("h2");
+    gameOverMessage.textContent = text;
+    let replayButton = document.createElement("button");
+    replayButton.textContent = "Play again?";
+    replayButton.addEventListener('click', restart);
+
+    headerDiv.appendChild(smiley);
+    headerDiv.appendChild(gameOverMessage);
+    modalContentDiv.appendChild(headerDiv);
+    modalContentDiv.appendChild(replayButton);
+    modalDiv.appendChild(modalContentDiv);
+    mainBody.appendChild(modalDiv);
 }
 
 createGameTiles();
