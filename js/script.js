@@ -48,9 +48,18 @@ function restart() {
         let modal = document.querySelector(".modal");
         let mainBody = document.querySelector("body");
         mainBody.removeChild(modal);
+        
     }
     catch {
         // No modal yet
+    }
+
+    try {
+        let mainBody = document.querySelector("body");
+        let replayButton = document.querySelector(".replay-button");
+        mainBody.removeChild(replayButton);
+    } catch {
+        // No replay button yet
     }
 
     createGameTiles();
@@ -314,10 +323,20 @@ function gameOver(text) {
     gameOverMessage.textContent = text;
     let replayButton = document.createElement("button");
     replayButton.textContent = "Play again?";
+    replayButton.classList.add("replay-button");
     replayButton.addEventListener('click', restart);
+
+    let closeButton = document.createElement("span");
+    closeButton.textContent = "X";
+    closeButton.classList.add("close-button");
+    closeButton.addEventListener("click", () => {
+        mainBody.removeChild(modalDiv);
+        mainBody.appendChild(replayButton);
+    })
 
     headerDiv.appendChild(smiley);
     headerDiv.appendChild(gameOverMessage);
+    modalContentDiv.appendChild(closeButton);
     modalContentDiv.appendChild(headerDiv);
     modalContentDiv.appendChild(replayButton);
     modalDiv.appendChild(modalContentDiv);
