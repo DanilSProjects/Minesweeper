@@ -283,6 +283,16 @@ function lose() {
 }
 
 function gameOver(text) {
+    gameTilesList.forEach( (tile) => {
+        bombArray.forEach( (bomb) => {
+            if (tile.getAttribute("id") === bomb["bomb-id"]) {
+                tile.classList.add("revealed-bomb")
+            } else {
+                tile.classList.add("revealed-empty")
+            }
+        })
+    })
+
     let mainBody = document.querySelector("body");
 
     let modalDiv = document.createElement("div");
