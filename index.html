@@ -8,6 +8,17 @@
     </head>
     <body>
         <h1>Minesweeper</h1>
-        <div oncontextmenu="return false;" id="game-container"></div>
+        <div id="difficulty-select">
+            <h2>Difficulty:</h2>
+            <div id="difficulty-radio">
+                <input type="radio" name="difficulty" id="easy" value="easy" checked>
+                <label for="easy">Easy</label>
+                <input type="radio" name="difficulty" id="medium" value="medium">
+                <label for="easy">Medium</label>
+                <input type="radio" name="difficulty" id="hard" value="hard">
+                <label for="easy">Hard</label>
+            </div>
+        </div>
+        <div oncontextmenu="return false;" id="game-container" class="easy"></div>
     </body>
 </html>

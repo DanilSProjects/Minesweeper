@@ -7,9 +7,51 @@ let bombsFlagged = 0;
 let gameTilesList = [];
 let revealedTilesList = [];
 
+// Adjust difficulty
+let difficultyRadioButtons = document.querySelectorAll("input[name='difficulty']");
+difficultyRadioButtons.forEach( (button) => {
+    button.addEventListener('change', (e) => {
+        switch (e.target.value) {
+            case "easy":
+                containerSide = 9;
+                bombNo = 10;
+                restart();
+                gameContainer.classList.add("easy");
+                break;
+            case "medium":
+                containerSide = 16;
+                bombNo = 40;
+                restart();
+                gameContainer.classList.add("medium");
+                break;
+            case "hard":
+                containerSide = 24;
+                bombNo = 100;
+                restart();
+                gameContainer.classList.add("hard");
+                break;
+        }
+    })
+})
+
+function restart() {
+    gameContainer.textContent = "";
+    gameContainer.classList = "";
+    bombArray = [];
+    tileArray = [];
+    bombsFlagged = 0;
+    gameTilesList = [];
+    revealedTilesList = [];
+    createGameTiles();
+    associateTileWithObject();
+    generateBombCoordinates();
+    labelBombTiles();
+    determineBombsAround();
+}
+
 // Add game tiles to game-container and create initial tile objects
 function createGameTiles() {
-    for (let i = 1; i <= 81; i++) {
+    for (let i = 1; i <= (containerSide * containerSide); i++) {
         let tile = document.createElement("div");
         tile.setAttribute('id', `tile_${i}`);
         tile.classList.add("game-tile");
@@ -20,7 +62,7 @@ function createGameTiles() {
             "isBomb":false,
             "bombsAround": 0,
         }
-        tileObject["x-position"] = (i % 9 === 0) ? 9 : i % 9;
+        tileObject["x-position"] = (i % containerSide === 0) ? containerSide : i % containerSide;
         let existingTiles = ["placeholder"];
         let yPos = 1;
         tileArray.forEach( (existingTile) => {
@@ -38,9 +80,9 @@ function createGameTiles() {
 // Generate bomb coordinates and associate them with respective tiles
 function generateBombCoordinates() {
     for (let i = 1; i <= bombNo;) {
-        let bombX = Math.ceil(Math.random() * 9);
-        let bombY = Math.ceil(Math.random() * 9);
-        let bombId = 9 * (bombY - 1) + bombX;
+        let bombX = Math.ceil(Math.random() * containerSide);
+        let bombY = Math.ceil(Math.random() * containerSide);
+        let bombId = containerSide * (bombY - 1) + bombX;
         let bombCoordinates = {
             "x-position": bombX,
             "y-position": bombY,
@@ -57,7 +99,7 @@ function generateBombCoordinates() {
 
 function labelBombTiles() {
     bombArray.forEach( (bomb) => {
-        let bombId = 9 * (bomb["y-position"] - 1) + bomb["x-position"];
+        let bombId = containerSide * (bomb["y-position"] - 1) + bomb["x-position"];
         tileArray.forEach((tile) => {
             if (tile["id"] === `tile_${bombId}`) {
                 tile["isBomb"] = true;
@@ -114,7 +156,7 @@ function selectedZero(xPos, yPos) {
         } )
 
 
-        let tileId = 9 * (tile["y-position"] - 1) + tile["x-position"];
+        let tileId = containerSide * (tile["y-position"] - 1) + tile["x-position"];
         let gameTile = document.querySelector(`#tile_${tileId}`);
         if (gameTile.classList.contains("revealed-empty") === false && tile.isBomb === false && tile.bombsAround === 0) {
             gameTile.classList.add("revealed-empty");
@@ -216,12 +258,15 @@ function tileFlagged(e) {
 // Victory/defeat functions to end game
 
 function checkForWin() {
-    if (revealedTilesList.length === (containerSide * containerSide - bombNo) || bombsFlagged === bombNo) {
+    if (revealedTilesList.length === (containerSide * containerSide - (bombNo - bombsFlagged)) || bombsFlagged === bombNo) {
         win();
     }
 }
 
 function win() {
+    console.log(bombNo)
+    console.log(bombsFlagged)
+    console.log(revealedTilesList.length)
     alert("You Won! :)")
 }
 

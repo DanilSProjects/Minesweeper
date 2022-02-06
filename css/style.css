@@ -1,6 +1,12 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 #game-container {
     display: grid;
-    width: 500px;
     grid-template-columns: repeat(9, 11.1%);
     column-gap: 0;
     border: 5px solid rgb(116, 116, 116);
@@ -8,16 +14,51 @@
     padding: 25px;
     background-color: rgb(150, 150, 150);
     gap: 0;
+    margin: 25px auto;
+}
+
+#game-container.easy {
+    grid-template-columns: repeat(9, 11.1%);
+    width: 500px;
+}
+#game-container.easy .game-tile{
+    height: 50px;
+}
+#game-container.easy .bomb-number{
+    font-size: 24px;
+}
+
+#game-container.medium {
+    grid-template-columns: repeat(16, 6.25%);
+    width: 600px;
+}
+#game-container.medium .game-tile{
+    height: 30px;
+}
+#game-container.medium .bomb-number{
+    font-size: 16px;
+}
+
+#game-container.hard {
+    grid-template-columns: repeat(24, 4.16%);
+    width: 700px;
+}
+#game-container.hard .game-tile{
+    height: 25px;
+}
+#game-container.hard .bomb-number{
+    font-size: 12px;
 }
 
 .game-tile {
-    text-align: center;
-    height: 50px;
     border-top: 2px solid white;
     border-left: 2px solid white;
     border-right: 2px solid black;
     border-bottom: 2px solid black;
     background-color: rgb(194, 194, 194);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .revealed-empty {
@@ -28,14 +69,23 @@
     background-color: rgb(226, 0, 0);
 }
 
-.bomb-number{
-    text-align: center;
-    font-size: 24px;
-    margin: 10px auto;
-}
-
 .flag {
     margin: 10%;
     width: 60%;
     height: 80%; 
+}
+
+#difficulty-select {
+    text-align: center;
+    border: 5px solid black;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+#difficulty-select h2{
+    margin: 0 0 10px 0;
+}
+
+#difficulty-radio label{
+    font-size: 22px;
 }
